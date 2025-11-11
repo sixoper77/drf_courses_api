@@ -10,10 +10,7 @@ class User(AbstractUser):
     
     def __str__(self):
         return self.get_username()
-    
-    @property
-    def teacher(self):
-        return self.is_teacher==True
+
 
 class Course(models.Model):
     name=models.CharField(max_length=255,verbose_name='Имя курса',null=True,blank=False)
