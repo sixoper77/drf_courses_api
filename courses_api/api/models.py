@@ -45,7 +45,7 @@ class Lesson(models.Model):
         ordering=['-created_at']
         
     def __str__(self):
-        return "{}-{}".format(self.course_name,self.duration)
+        return "{}-{}".format(self.course,self.duration)
     
 class Enrollment(models.Model):
     student=models.ForeignKey(User,on_delete=models.CASCADE,related_name='enrollment')

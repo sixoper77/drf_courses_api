@@ -7,7 +7,7 @@ from .serializers import ShortCourseSerializer
 from rest_framework import status
 
 class ShortCoursesAPIView(views.APIView):
-    def get(self):
+    def get(self,request):
         courses=Course.objects.annotate(
             avg_rating=Avg('reviews__grade')
         ).select_related('teacher')
