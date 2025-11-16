@@ -2,13 +2,16 @@ from rest_framework import views
 from . models import Course
 from django.db.models import Avg,Count
 from rest_framework.response import Response
-from .serializers import ShortCourseSerializer,UserRegistrationSerializer,UserSerializer,UserLogInSerializer,DetailCourseSerializer
+from .serializers import (ShortCourseSerializer,UserRegistrationSerializer,UserSerializer,UserLogInSerializer,
+                          DetailCourseSerializer,CourseAddSerializer,EnrollmentAddSerializer)
 from rest_framework import status
 from rest_framework import generics
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import permissions
 from rest_framework import views
 from .permissions import IsTeacher
+from rest_framework.permissions import IsAuthenticated
+
 class ShortCoursesAPIView(views.APIView):
     def get(self,request):
         courses=Course.objects.annotate(
@@ -76,3 +79,18 @@ class CourseDetailAPIView(views.APIView):
         ).select_related('teacher').prefetch_related('lessons','reviews','reviews__student',).get(pk=pk)
         serializer=DetailCourseSerializer(course)
         return Response(serializer.data,status=status.HTTP_200_OK)
+    
+    
+class CourseCreateAPIView(generics.CreateAPIView):
+    permission_classes=[IsTeacher]
+    serializer_class=CourseAddSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(teacher=self.request.user)
+        
+class EnrollmentCreateAPIView(generics.CreateAPIView):
+    serializer_class=EnrollmentAddSerializer
+    permission_classes=[IsAuthenticated]
+    
+    def perform_create(self, serializer):
+        serializer.save(student=self.request.user)

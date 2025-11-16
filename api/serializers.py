@@ -130,4 +130,35 @@ class UserLogInSerializer(serializers.Serializer):
     
             
     
+class CourseAddSerializer(serializers.ModelSerializer):
+    is_available=serializers.BooleanField(default=False)
+    class Meta:
+        model=Course
+        fields=(
+            'name',
+            'description',
+            'price',
+            'is_available'
+        )
+        
+    def validate_price(self,value):
+        if value<=0:
+            raise serializers.ValidationError('Price must be greater than 0')
+        return value
     
+class EnrollmentAddSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Enrollment
+        fields=('course',)
+        
+    def validate(self, attrs):
+        user=self.context['request'].user
+        course=attrs['course']
+        
+        if not course.is_available:
+            raise serializers.ValidationError('Course not available')
+        
+        if Enrollment.objects.filter(student=user,course=course).exists():
+            raise serializers.ValidationError('You are already enrolled in the course.')
+        
+        return attrs
