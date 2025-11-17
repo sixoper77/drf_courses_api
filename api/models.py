@@ -1,10 +1,11 @@
+from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator,MinValueValidator
 
 class User(AbstractUser):
     is_teacher=models.BooleanField(default=False)
-    
+    balance=models.DecimalField(max_digits=15,decimal_places=2)
     class Meta:
         db_table='users'
     
@@ -20,6 +21,7 @@ class Course(models.Model):
     created_at=models.DateTimeField(verbose_name='Дата создания',auto_now_add=True)
     updated_at=models.DateTimeField(verbose_name='Обновлен',auto_now=True)
     is_available=models.BooleanField(verbose_name='Доступность',default=True)
+
 
     
     
@@ -37,7 +39,7 @@ class Course(models.Model):
 class Lesson(models.Model):
     course=models.ForeignKey(Course,on_delete=models.CASCADE,related_name='lessons')
     content=models.CharField(max_length=6024,verbose_name='Контент',null=False,blank=False)
-    duration=models.DurationField()
+    duration=models.DurationField(validators=[MinValueValidator(timedelta(seconds=1))])
     created_at=models.DateTimeField(verbose_name='Дата создания',auto_now_add=True)
     updated_at=models.DateTimeField(verbose_name='Обновлен',auto_now=True)
     

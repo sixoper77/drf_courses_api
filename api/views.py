@@ -3,7 +3,7 @@ from . models import Course
 from django.db.models import Avg,Count
 from rest_framework.response import Response
 from .serializers import (ShortCourseSerializer,UserRegistrationSerializer,UserSerializer,UserLogInSerializer,
-                          DetailCourseSerializer,CourseAddSerializer,EnrollmentAddSerializer)
+                          DetailCourseSerializer,CourseAddSerializer,EnrollmentAddSerializer,ReviewAddSerializer,LessonAddSerializer)
 from rest_framework import status
 from rest_framework import generics
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -13,6 +13,7 @@ from .permissions import IsTeacher
 from rest_framework.permissions import IsAuthenticated
 
 class ShortCoursesAPIView(views.APIView):
+    permission_classes=[IsAuthenticated]
     def get(self,request):
         courses=Course.objects.annotate(
             avg_rating=Avg('reviews__grade')
@@ -94,3 +95,16 @@ class EnrollmentCreateAPIView(generics.CreateAPIView):
     
     def perform_create(self, serializer):
         serializer.save(student=self.request.user)
+        
+class ReviewCreateAPIView(generics.CreateAPIView):
+    permission_classes=[IsAuthenticated]
+    serializer_class=ReviewAddSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(student=self.request.user)
+        
+class LessonCreateAPIView(generics.CreateAPIView):
+    permission_classes=[IsTeacher]
+    serializer_class=LessonAddSerializer
+    
+    

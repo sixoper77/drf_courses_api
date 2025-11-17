@@ -23,6 +23,16 @@ class LessonSerializer(serializers.ModelSerializer):
             'updated_at'
         )
         
+class LessonAddSerializer(serializers.ModelSerializer):
+    # duration=serializers.DurationField()
+    class Meta:
+        model=Lesson
+        fields=(
+            'course',
+            'duration',
+            'content'
+        )
+   
 class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model=Enrollment
@@ -100,7 +110,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             first_name=validated_data.get('first_name',''),
             last_name=validated_data.get('last_name',''),
             password=validated_data['password'],
-            is_teacher=validated_data.get('is_teacher',False)
+            is_teacher=validated_data.get('is_teacher',False),
+            balance=validated_data.get('balance',0)
         )
         return user
     
@@ -162,3 +173,24 @@ class EnrollmentAddSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('You are already enrolled in the course.')
         
         return attrs
+    
+class ReviewAddSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Review
+        fields=(
+            'course',
+            'review',
+            'grade'
+        )
+        
+    def validate(self, attrs):
+        user=self.context['request'].user
+        course=attrs['course']
+        
+        if not Enrollment.objects.filter(student=user,course=course).exists():
+            raise serializers.ValidationError('You are not registered for the course yet.')
+        if Review.objects.filter(student=user,course=course).exists():
+            raise serializers.ValidationError('You have already left a review.')
+        
+        return attrs
+        
