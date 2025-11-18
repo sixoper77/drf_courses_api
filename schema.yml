@@ -1,0 +1,310 @@
+openapi: 3.0.3
+info:
+  title: DRF Courses API
+  version: 1.0.0
+  description: Your project description
+paths:
+  /api/v1/courses/:
+    get:
+      operationId: v1_courses_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/courses/{id}/:
+    get:
+      operationId: v1_courses_retrieve_2
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/create-course/:
+    post:
+      operationId: v1_create_course_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseAdd'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CourseAdd'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CourseAdd'
+        required: true
+      security:
+      - cookieAuth: []
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseAdd'
+          description: ''
+  /api/v1/enrollment/:
+    post:
+      operationId: v1_enrollment_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrollmentAdd'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EnrollmentAdd'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EnrollmentAdd'
+        required: true
+      security:
+      - cookieAuth: []
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollmentAdd'
+          description: ''
+  /api/v1/lesson-create/:
+    post:
+      operationId: v1_lesson_create_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LessonAdd'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LessonAdd'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LessonAdd'
+        required: true
+      security:
+      - cookieAuth: []
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonAdd'
+          description: ''
+  /api/v1/login/:
+    post:
+      operationId: v1_login_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogIn'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserLogIn'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserLogIn'
+        required: true
+      security:
+      - cookieAuth: []
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLogIn'
+          description: ''
+  /api/v1/registration/:
+    post:
+      operationId: v1_registration_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+        required: true
+      security:
+      - cookieAuth: []
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegistration'
+          description: ''
+  /api/v1/review/:
+    post:
+      operationId: v1_review_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewAdd'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReviewAdd'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReviewAdd'
+        required: true
+      security:
+      - cookieAuth: []
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewAdd'
+          description: ''
+components:
+  schemas:
+    CourseAdd:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          title: Имя курса
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+          title: Описание курса
+          maxLength: 1024
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+        is_available:
+          type: boolean
+          default: false
+      required:
+      - price
+    EnrollmentAdd:
+      type: object
+      properties:
+        course:
+          type: integer
+      required:
+      - course
+    LessonAdd:
+      type: object
+      properties:
+        course:
+          type: integer
+        duration:
+          type: string
+        content:
+          type: string
+          title: Контент
+          maxLength: 6024
+      required:
+      - content
+      - course
+      - duration
+    ReviewAdd:
+      type: object
+      properties:
+        course:
+          type: integer
+        review:
+          type: string
+          title: Отзыв
+          maxLength: 255
+        grade:
+          type: integer
+          maximum: 5
+          minimum: 1
+      required:
+      - course
+      - grade
+      - review
+    UserLogIn:
+      type: object
+      properties:
+        password:
+          type: string
+          writeOnly: true
+        username:
+          type: string
+      required:
+      - password
+      - username
+    UserRegistration:
+      type: object
+      properties:
+        username:
+          type: string
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+        is_teacher:
+          type: boolean
+          default: false
+        password_confirmed:
+          type: string
+          writeOnly: true
+        email:
+          type: string
+          format: email
+      required:
+      - email
+      - password
+      - password_confirmed
+      - username
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
